@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "healthindicators",
+  "version": "${version}",
+
+  "name": "PlayerHealthIndicators",
+  "description": "Displays a health bar above players",
+  "authors": [
+    "Gaider10"
+  ],
+
+  "license": "MIT",
+
+  "environment": "client",
+  "entrypoints": {
+    "main": [
+      "me.andrew.healthindicators.HealthIndicatorsMod"
+    ]
+  },
+  "mixins": [
+    "healthindicators.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.11.3",
+    "fabric": "*",
+    "minecraft": "1.18.x",
+    "java": ">=17"
+  }
+}
