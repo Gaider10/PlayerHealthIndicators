@@ -55,7 +55,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
             RenderSystem.setShaderTexture(0, DrawableHelper.GUI_ICONS_TEXTURE);
             RenderSystem.enableDepthTest();
 
-            Matrix4f model = matrixStack.peek().getPositionMatrix();
+            Matrix4f model = matrixStack.peek().getModel();
 
             int healthRed = MathHelper.ceil(abstractClientPlayerEntity.getHealth());
             int maxHealth = MathHelper.ceil(abstractClientPlayerEntity.getMaxHealth());
