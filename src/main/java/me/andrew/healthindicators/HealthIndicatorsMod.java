@@ -24,7 +24,7 @@ public class HealthIndicatorsMod implements ModInitializer {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (keyBinding.wasPressed()) {
                 toggled = !toggled;
-                if(client.player != null) {
+                if (client.player != null) {
                     client.player.sendMessage(Text.literal((toggled ? "Enabled" : "Disabled") + " Health Indicators"), true);
                 }
             }

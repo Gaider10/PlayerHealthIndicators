@@ -2,6 +2,7 @@ package me.andrew.healthindicators.mixin;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.andrew.healthindicators.HealthIndicatorsMod;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.*;
@@ -10,6 +11,7 @@ import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.vehicle.MinecartEntity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
@@ -28,7 +30,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
             at = @At("RETURN")
     )
     public void renderHealth(AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int light, CallbackInfo ci) {
-        if (HealthIndicatorsMod.toggled && !abstractClientPlayerEntity.isMainPlayer()) {
+        if (HealthIndicatorsMod.toggled && !abstractClientPlayerEntity.isMainPlayer() && !abstractClientPlayerEntity.isInvisibleTo(MinecraftClient.getInstance().player)) {
             matrixStack.push();
 
             double d = this.dispatcher.getSquaredDistanceToCamera(abstractClientPlayerEntity);
