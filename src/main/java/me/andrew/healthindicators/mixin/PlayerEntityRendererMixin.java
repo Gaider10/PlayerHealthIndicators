@@ -44,7 +44,6 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
             }
 
             matrixStack.multiply(this.dispatcher.getRotation());
-//            matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(mc.gameRenderer.getCamera().getPitch()));
 
             float pixelSize = 0.025F;
             matrixStack.scale(pixelSize, pixelSize, pixelSize);
@@ -70,11 +69,17 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
             boolean lastYellowHalf = (healthYellow & 1) == 1;
             int heartsTotal = heartsNormal + heartsYellow;
 
-            int pixelsTotal = heartsTotal * 8 + 1;
-            float maxX = pixelsTotal / 2.0f;
             for (int heart = 0; heart < heartsTotal; heart++){
-                float x = maxX - heart * 8;
-                drawHeart(model, vertexConsumer, x, 0);
+                float height = 0;
+
+                    int heartStacks = 0;
+                    for (int yOffset = Math.floorDiv(heart, 10); yOffset >= 1; yOffset--) {
+                        heartStacks += 10;
+                        height += 10;
+                    }
+                float x = 40.5F - (heart - heartStacks) * 8;
+
+                drawHeart(model, vertexConsumer, x, 0, height);
                 // Offset in the gui icons texture in hearts
                 // 0 - empty, 2 - red, 8 - yellow, +1 for half
                 int type;
@@ -88,7 +93,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
                     if(heart == heartsTotal - 1 && lastYellowHalf) type += 1;
                 }
                 if (type != 0) {
-                    drawHeart(model, vertexConsumer, x, type);
+                    drawHeart(model, vertexConsumer, x, type, height);
                 }
             }
 
@@ -98,7 +103,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
         }
     }
 
-    private static void drawHeart(Matrix4f model, VertexConsumer vertexConsumer, float x, int type){
+    private static void drawHeart(Matrix4f model, VertexConsumer vertexConsumer, float x, int type, float height){
         float minU = 16F / 256F + type * 9F / 256F;
         float maxU = minU + 9F / 256F;
         float minV = 0;
@@ -106,10 +111,10 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
 
         float heartSize = 9F;
 
-        drawVertex(model, vertexConsumer, x, 0F - heartSize, 0F, minU, maxV);
-        drawVertex(model, vertexConsumer, x - heartSize, 0F - heartSize, 0F, maxU, maxV);
-        drawVertex(model, vertexConsumer, x - heartSize, 0F, 0F, maxU, minV);
-        drawVertex(model, vertexConsumer, x, 0F, 0F, minU, minV);
+        drawVertex(model, vertexConsumer, x, height - heartSize, 0F, minU, maxV);
+        drawVertex(model, vertexConsumer, x - heartSize, height - heartSize, 0F, maxU, maxV);
+        drawVertex(model, vertexConsumer, x - heartSize, height, 0F, maxU, minV);
+        drawVertex(model, vertexConsumer, x, height, 0F, minU, minV);
     }
 
     private static void drawVertex(Matrix4f model, VertexConsumer vertices, float x, float y, float z, float u, float v) {
