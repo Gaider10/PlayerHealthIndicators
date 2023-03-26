@@ -1,4 +1,6 @@
 {
-  "key.categories.healthindicators": "Player Health Indicators",
-  "key.healthindicators.toggle": "Toggle"
+  "categories.mobhealthindicator": "Mob Health Indicator",
+  "mobhealthindicator.toggle": "Toggle",
+  "mobhealthindicator.enabled": "Enabled Health Bars",
+  "mobhealthindicator.disabled": "Disabled Health Bars"
 }

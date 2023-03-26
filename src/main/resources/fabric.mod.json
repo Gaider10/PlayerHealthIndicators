@@ -14,11 +14,11 @@
   "environment": "client",
   "entrypoints": {
     "main": [
-      "me.andrew.healthindicators.HealthIndicatorsMod"
+      "net.theoneandonlydansan.mobhealthindicator.MobHealthIndicator"
     ]
   },
   "mixins": [
-    "healthindicators.mixins.json"
+    "mobhealthindicator.json"
   ],
 
   "depends": {
