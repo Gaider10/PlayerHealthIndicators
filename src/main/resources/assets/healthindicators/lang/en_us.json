@@ -1,4 +1,5 @@
 {
   "key.categories.healthindicators": "Player Health Indicators",
-  "key.healthindicators.toggle": "Toggle"
+  "key.healthindicators.toggle": "Toggle Rendering",
+  "key.healthindicators.heartStacking": "Toggle Heart Stacking"
 }

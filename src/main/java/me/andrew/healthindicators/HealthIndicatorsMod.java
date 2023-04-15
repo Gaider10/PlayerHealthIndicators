@@ -10,22 +10,34 @@ import net.minecraft.text.Text;
 public class HealthIndicatorsMod implements ModInitializer {
     public static final String MOD_ID = "healthindicators";
 
-    public static KeyBinding keyBinding;
-    public static boolean toggled = true;
+    public static final KeyBinding RENDERING_ENABLED_KEY_BINDING = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+            "key." + MOD_ID + ".toggle",
+            InputUtil.UNKNOWN_KEY.getCode(),
+            "key.categories." + MOD_ID
+    ));
+    public static final KeyBinding HEART_STACKING_ENABLED_KEY_BINDING = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+            "key." + MOD_ID + ".heartStacking",
+            InputUtil.UNKNOWN_KEY.getCode(),
+            "key.categories." + MOD_ID
+    ));
+
+    public static boolean rendingEnabled = true;
+    public static boolean heartStackingEnabled = true;
 
     @Override
     public void onInitialize() {
-        keyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key." + MOD_ID + ".toggle",
-                InputUtil.UNKNOWN_KEY.getCode(),
-                "key.categories." + MOD_ID
-        ));
-
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            while (keyBinding.wasPressed()) {
-                toggled = !toggled;
+            while (RENDERING_ENABLED_KEY_BINDING.wasPressed()) {
+                rendingEnabled = !rendingEnabled;
                 if (client.player != null) {
-                    client.player.sendMessage(Text.literal((toggled ? "Enabled" : "Disabled") + " Health Indicators"), true);
+                    client.player.sendMessage(Text.literal((rendingEnabled ? "Enabled" : "Disabled") + " Health Indicators"), true);
+                }
+            }
+
+            while (HEART_STACKING_ENABLED_KEY_BINDING.wasPressed()) {
+                heartStackingEnabled = !heartStackingEnabled;
+                if (client.player != null) {
+                    client.player.sendMessage(Text.literal((heartStackingEnabled ? "Enabled" : "Disabled") + " Heart Stacking"), true);
                 }
             }
         });
