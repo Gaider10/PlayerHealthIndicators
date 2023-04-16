@@ -1,11 +1,11 @@
 package me.andrew.healthindicators;
 
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.text.Text;
+import net.minecraft.text.LiteralText;
 
 public class HealthIndicatorsMod implements ModInitializer {
     public static final String MOD_ID = "healthindicators";
@@ -36,35 +36,35 @@ public class HealthIndicatorsMod implements ModInitializer {
     @Override
     public void onInitialize() {
         Config.load();
+    }
 
-        ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            while (RENDERING_ENABLED_KEY_BINDING.wasPressed()) {
-                Config.setRenderingEnabled(!Config.getRenderingEnabled());
-                if (client.player != null) {
-                    client.player.sendMessage(Text.literal((Config.getRenderingEnabled() ? "Enabled" : "Disabled") + " Health Indicators"), true);
-                }
+    public static void onTick(MinecraftClient client) {
+        while (RENDERING_ENABLED_KEY_BINDING.wasPressed()) {
+            Config.setRenderingEnabled(!Config.getRenderingEnabled());
+            if (client.player != null) {
+                client.player.sendMessage(new LiteralText((Config.getRenderingEnabled() ? "Enabled" : "Disabled") + " Health Indicators"), true);
             }
+        }
 
-            while (HEART_STACKING_ENABLED_KEY_BINDING.wasPressed()) {
-                Config.setHeartStackingEnabled(!Config.getHeartStackingEnabled());
-                if (client.player != null) {
-                    client.player.sendMessage(Text.literal((Config.getHeartStackingEnabled() ? "Enabled" : "Disabled") + " Heart Stacking"), true);
-                }
+        while (HEART_STACKING_ENABLED_KEY_BINDING.wasPressed()) {
+            Config.setHeartStackingEnabled(!Config.getHeartStackingEnabled());
+            if (client.player != null) {
+                client.player.sendMessage(new LiteralText((Config.getHeartStackingEnabled() ? "Enabled" : "Disabled") + " Heart Stacking"), true);
             }
+        }
 
-            while (INCREASE_HEART_OFFSET_KEY_BINDING.wasPressed()) {
-                Config.setHeartOffset(Config.getHeartOffset() + 1);
-                if (client.player != null) {
-                    client.player.sendMessage(Text.literal("Set heart offset to " + Config.getHeartOffset()), true);
-                }
+        while (INCREASE_HEART_OFFSET_KEY_BINDING.wasPressed()) {
+            Config.setHeartOffset(Config.getHeartOffset() + 1);
+            if (client.player != null) {
+                client.player.sendMessage(new LiteralText("Set heart offset to " + Config.getHeartOffset()), true);
             }
+        }
 
-            while (DECREASE_HEART_OFFSET_KEY_BINDING.wasPressed()) {
-                Config.setHeartOffset(Config.getHeartOffset() - 1);
-                if (client.player != null) {
-                    client.player.sendMessage(Text.literal("Set heart offset to " + Config.getHeartOffset()), true);
-                }
+        while (DECREASE_HEART_OFFSET_KEY_BINDING.wasPressed()) {
+            Config.setHeartOffset(Config.getHeartOffset() - 1);
+            if (client.player != null) {
+                client.player.sendMessage(new LiteralText("Set heart offset to " + Config.getHeartOffset()), true);
             }
-        });
+        }
     }
 }
