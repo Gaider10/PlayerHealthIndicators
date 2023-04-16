@@ -1,6 +1,7 @@
 package me.andrew.healthindicators.mixin;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import me.andrew.healthindicators.Config;
 import me.andrew.healthindicators.HealthIndicatorsMod;
 import me.andrew.healthindicators.HeartType;
 import net.minecraft.client.MinecraftClient;
@@ -31,7 +32,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
             at = @At("RETURN")
     )
     public void renderHealth(AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int light, CallbackInfo ci) {
-        if (!HealthIndicatorsMod.rendingEnabled) return;
+        if (!Config.getRenderingEnabled()) return;
 
         if (!shouldRenderHeartsForEntity(abstractClientPlayerEntity)) return;
 
@@ -52,6 +53,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
 
         float pixelSize = 0.025F;
         matrixStack.scale(pixelSize, pixelSize, pixelSize);
+        matrixStack.translate(0, Config.getHeartOffset(), 0);
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder vertexConsumer = tessellator.getBuffer();
@@ -74,7 +76,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
         boolean lastYellowHalf = (healthYellow & 1) == 1;
         int heartsTotal = heartsNormal + heartsYellow;
 
-        int heartsPerRow = HealthIndicatorsMod.heartStackingEnabled ? 10 : heartsTotal;
+        int heartsPerRow = Config.getHeartStackingEnabled() ? 10 : heartsTotal;
         int rowsTotal = (heartsTotal + heartsPerRow - 1) / heartsPerRow;
         int rowOffset = Math.max(10 - (rowsTotal - 2), 3);
 

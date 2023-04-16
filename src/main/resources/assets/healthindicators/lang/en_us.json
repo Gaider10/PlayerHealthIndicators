@@ -1,5 +1,7 @@
 {
   "key.categories.healthindicators": "Player Health Indicators",
-  "key.healthindicators.toggle": "Toggle Rendering",
-  "key.healthindicators.heartStacking": "Toggle Heart Stacking"
+  "key.healthindicators.renderingEnabled": "Toggle Rendering",
+  "key.healthindicators.heartStackingEnabled": "Toggle Heart Stacking",
+  "key.healthindicators.increaseHeartOffset": "Increase Heart Offset",
+  "key.healthindicators.decreaseHeartOffset": "Decrease Heart Offset"
 }
