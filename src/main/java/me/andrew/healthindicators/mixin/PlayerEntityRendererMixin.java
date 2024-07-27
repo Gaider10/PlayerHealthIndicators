@@ -52,6 +52,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
 
         matrixStack.multiply(this.dispatcher.getRotation());
 //            matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(mc.gameRenderer.getCamera().getPitch()));
+        matrixStack.scale(-1, 1, 1);
 
         float pixelSize = 0.025F;
         matrixStack.scale(pixelSize, pixelSize, pixelSize);
@@ -137,9 +138,9 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
         float heartSize = 9F;
 
         drawVertex(model, vertexConsumer, x, y - heartSize, z, minU, maxV);
-        drawVertex(model, vertexConsumer, x, y, z, minU, minV);
-        drawVertex(model, vertexConsumer, x - heartSize, y, z, maxU, minV);
         drawVertex(model, vertexConsumer, x - heartSize, y - heartSize, z, maxU, maxV);
+        drawVertex(model, vertexConsumer, x - heartSize, y, z, maxU, minV);
+        drawVertex(model, vertexConsumer, x, y, z, minU, minV);
     }
 
     @Unique
