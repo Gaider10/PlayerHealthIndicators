@@ -10,20 +10,21 @@ import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
+import net.minecraft.client.texture.GuiAtlasManager;
+import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.Identifier;
+import net.minecraft.scoreboard.ScoreboardDisplaySlot;
 import net.minecraft.util.math.MathHelper;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PlayerEntityRenderer.class)
 public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> {
-    private static final Identifier ICONS = new Identifier("textures/gui/icons.png");
-
     public PlayerEntityRendererMixin(EntityRendererFactory.Context ctx, PlayerEntityModel<AbstractClientPlayerEntity> model, float shadowRadius) {
         super(ctx, model, shadowRadius);
     }
@@ -44,7 +45,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
         matrixStack.translate(0, abstractClientPlayerEntity.getHeight() + 0.5f, 0);
         if (this.hasLabel(abstractClientPlayerEntity) && d <= 4096.0) {
             matrixStack.translate(0.0D, 9.0F * 1.15F * 0.025F, 0.0D);
-            if (d < 100.0 && abstractClientPlayerEntity.getScoreboard().getObjectiveForSlot(2) != null) {
+            if (d < 100.0 && abstractClientPlayerEntity.getScoreboard().getObjectiveForSlot(ScoreboardDisplaySlot.BELOW_NAME) != null) {
                 matrixStack.translate(0.0D, 9.0F * 1.15F * 0.025F, 0.0D);
             }
         }
@@ -56,13 +57,12 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
         matrixStack.scale(pixelSize, pixelSize, pixelSize);
         matrixStack.translate(0, Config.getHeartOffset(), 0);
 
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder vertexConsumer = tessellator.getBuffer();
+        GuiAtlasManager guiAtlasManager = MinecraftClient.getInstance().getGuiAtlasManager();
 
-        vertexConsumer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-        RenderSystem.setShaderTexture(0, ICONS);
+        RenderSystem.setShaderTexture(0, guiAtlasManager.getSprite(HeartType.EMPTY.texture).getAtlasId());
         RenderSystem.enableDepthTest();
+        BufferBuilder vertexConsumer = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
 
         Matrix4f model = matrixStack.peek().getPositionMatrix();
 
@@ -90,7 +90,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
             float x = maxX - col * 8;
             float y = row * rowOffset;
             float z = row * 0.01F;
-            drawHeart(model, vertexConsumer, x, y, z, HeartType.EMPTY);
+            drawHeart(model, vertexConsumer, x, y, z, HeartType.EMPTY, guiAtlasManager);
 
             HeartType type;
             if (heart < heartsRed) {
@@ -107,15 +107,16 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
                 }
             }
             if (type != HeartType.EMPTY) {
-                drawHeart(model, vertexConsumer, x, y, z, type);
+                drawHeart(model, vertexConsumer, x, y, z, type, guiAtlasManager);
             }
         }
 
-        tessellator.draw();
+        BufferRenderer.drawWithGlobalProgram(vertexConsumer.end());
 
         matrixStack.pop();
     }
 
+    @Unique
     private static boolean shouldRenderHeartsForEntity(Entity entity) {
         if (entity instanceof AbstractClientPlayerEntity abstractClientPlayerEntity) {
             return !abstractClientPlayerEntity.isMainPlayer() && !abstractClientPlayerEntity.isInvisibleTo(MinecraftClient.getInstance().player);
@@ -124,21 +125,25 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
         return false;
     }
 
-    private static void drawHeart(Matrix4f model, VertexConsumer vertexConsumer, float x, float y, float z, HeartType type){
-        float minU = type.u / 256F;
-        float maxU = minU + 9F / 256F;
-        float minV = type.v / 256F;
-        float maxV = minV + 9F / 256F;
+    @Unique
+    private static void drawHeart(Matrix4f model, VertexConsumer vertexConsumer, float x, float y, float z, HeartType type, GuiAtlasManager guiAtlasManager){
+        Sprite sprite = guiAtlasManager.getSprite(type.texture);
+
+        float minU = sprite.getMinU();
+        float maxU = sprite.getMaxU();
+        float minV = sprite.getMinV();
+        float maxV = sprite.getMaxV();
 
         float heartSize = 9F;
 
         drawVertex(model, vertexConsumer, x, y - heartSize, z, minU, maxV);
-        drawVertex(model, vertexConsumer, x - heartSize, y - heartSize, z, maxU, maxV);
-        drawVertex(model, vertexConsumer, x - heartSize, y, z, maxU, minV);
         drawVertex(model, vertexConsumer, x, y, z, minU, minV);
+        drawVertex(model, vertexConsumer, x - heartSize, y, z, maxU, minV);
+        drawVertex(model, vertexConsumer, x - heartSize, y - heartSize, z, maxU, maxV);
     }
 
+    @Unique
     private static void drawVertex(Matrix4f model, VertexConsumer vertices, float x, float y, float z, float u, float v) {
-        vertices.vertex(model, x, y, z).texture(u, v).next();
+        vertices.vertex(model, x, y, z).texture(u, v);
     }
 }
